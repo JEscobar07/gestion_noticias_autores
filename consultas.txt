@@ -1,0 +1,44 @@
+-- Obtener el listado de noticias de un autor, en donde el campo de búsqueda o filtro del autor es su email.
+db.conexion_noticias.aggregate([
+    {
+      $lookup: {
+        from: "conexion_autores",
+        localField: "conexion_autor_id",
+        foreignField: "_id",
+        as: "autor_info"
+      }
+    },
+    {
+       $match: { "autor_info.email": "pedro.hernandez@gmail.com" }
+    },
+  ]);
+  
+
+  -- Obtener el listado de noticias de un autor, en donde el campo de búsqueda o filtro del autor es su nombre, los resultados deben salir
+  de forma ordenada por el campo fecha de publicación de forma descendente, es decir primero se ven las más recientes.
+
+  db.conexion_noticias.aggregate([
+    {
+      $lookup: {
+        from: "conexion_autores",
+        localField: "conexion_autor_id",
+        foreignField: "_id",
+        as: "autor_info"
+      }
+    },
+    {
+      $match: { "autor_info.nombre": "Jorge", "autor_info.apellido": "Diaz" }
+    },
+    {
+      $sort: { fecha_publicacion: -1 }
+    }
+  ]);
+
+  -- Obtener un listado de noticias filtrado por un rango de fechas, por ejemplo todas las noticias entre el 10-01-2024 y el 30-01-2024
+
+  db.conexion_noticias.find({
+    fecha_publicacion: {
+      $gte: new Date("2024-01-10"),
+      $lte: new Date("2024-01-30")
+    }
+  })
